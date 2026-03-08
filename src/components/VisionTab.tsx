@@ -195,7 +195,7 @@ export function VisionTab() {
   // Render
   // ------------------------------------------------------------------
   return (
-    <div className="tab-panel vision-panel">
+    <div className="flex-1 flex flex-col overflow-hidden h-full">
       <ModelBanner
         state={loader.state}
         progress={loader.progress}
@@ -204,18 +204,19 @@ export function VisionTab() {
         label="VLM"
       />
 
-      <div className="vision-camera">
+      <div className="relative flex-1 bg-charcoal/5 flex items-center justify-center overflow-hidden m-6 rounded-2xl border border-charcoal/10">
         {!cameraActive && (
-          <div className="empty-state">
-            <h3>📷 Camera Preview</h3>
-            <p>Tap below to start the camera</p>
+          <div className="flex flex-col items-center justify-center text-center gap-3 p-6">
+            <div className="text-5xl mb-2">📷</div>
+            <h3 className="text-charcoal text-xl font-semibold">Camera Preview</h3>
+            <p className="text-charcoal/60">Tap below to start the camera</p>
           </div>
         )}
-        <div ref={videoMountRef} />
+        <div ref={videoMountRef} className="w-full h-full rounded-2xl overflow-hidden" />
       </div>
 
       <input
-        className="vision-prompt"
+        className="mx-6 mb-4 px-4 py-3 border border-charcoal/20 rounded-xl bg-white text-charcoal text-sm outline-none focus:border-coral focus:ring-2 focus:ring-coral/20 transition-all placeholder:text-charcoal/40 disabled:opacity-50 disabled:bg-charcoal/5"
         type="text"
         placeholder="What do you want to know about the image?"
         value={prompt}
@@ -223,20 +224,29 @@ export function VisionTab() {
         disabled={liveMode}
       />
 
-      <div className="vision-actions">
+      <div className="flex gap-3 px-6 pb-6">
         {!cameraActive ? (
-          <button className="btn btn-primary" onClick={startCamera}>Start Camera</button>
+          <button 
+            className="flex-1 px-5 py-3 rounded-xl bg-coral hover:bg-coral-dark text-white text-sm font-medium transition-all shadow-sm"
+            onClick={startCamera}
+          >
+            Start Camera
+          </button>
         ) : (
           <>
             <button
-              className="btn btn-primary"
+              className="flex-1 px-5 py-3 rounded-xl bg-coral hover:bg-coral-dark text-white text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
               onClick={describeSingle}
               disabled={processing || liveMode}
             >
               {processing && !liveMode ? 'Analyzing...' : 'Describe'}
             </button>
             <button
-              className={`btn ${liveMode ? 'btn-live-active' : ''}`}
+              className={`px-6 py-3 rounded-xl text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm ${
+                liveMode 
+                  ? 'bg-charcoal hover:bg-charcoal/90 text-white' 
+                  : 'bg-white hover:bg-charcoal/5 text-charcoal border border-charcoal/20'
+              }`}
               onClick={toggleLive}
               disabled={processing && !liveMode}
             >
@@ -247,18 +257,24 @@ export function VisionTab() {
       </div>
 
       {error && (
-        <div className="vision-result">
-          <span className="error-text">Error: {error}</span>
+        <div className="mx-6 mb-6 p-4 bg-coral/10 border border-coral/20 rounded-xl">
+          <span className="text-coral text-sm font-medium">Error: {error}</span>
         </div>
       )}
 
       {result && (
-        <div className="vision-result">
-          {liveMode && <span className="live-badge">LIVE</span>}
-          <h4>Result</h4>
-          <p>{result.text}</p>
+        <div className="mx-6 mb-6 p-5 bg-white border border-charcoal/10 rounded-xl shadow-sm">
+          {liveMode && (
+            <span className="inline-block mb-3 px-3 py-1 text-xs font-bold uppercase bg-coral text-white rounded-full">
+              LIVE
+            </span>
+          )}
+          <h4 className="text-sm font-semibold mb-2 text-charcoal/60 uppercase tracking-wide">Result</h4>
+          <p className="text-sm text-charcoal leading-relaxed">{result.text}</p>
           {result.totalMs > 0 && (
-            <div className="message-stats">{(result.totalMs / 1000).toFixed(1)}s</div>
+            <div className="mt-3 text-xs text-charcoal/50">
+              {(result.totalMs / 1000).toFixed(1)}s
+            </div>
           )}
         </div>
       )}

@@ -68,6 +68,22 @@ export default defineConfig({
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'credentialless',
     },
+    fs: {
+      // Allow serving files from the dataset folder
+      allow: ['..'],
+    },
+  },
+  build: {
+    sourcemap: true,
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress sourcemap warnings for node_modules/@runanywhere packages
+        if (warning.code === 'SOURCEMAP_ERROR' && warning.message.includes('@runanywhere')) {
+          return;
+        }
+        warn(warning);
+      },
+    },
   },
   assetsInclude: ['**/*.wasm'],
   worker: { format: 'es' },

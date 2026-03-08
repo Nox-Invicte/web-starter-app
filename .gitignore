@@ -5,3 +5,6 @@ dist/
 *.tsbuildinfo
 .playwright-mcp/
 *.png
+console.log
+public/
+dataset/

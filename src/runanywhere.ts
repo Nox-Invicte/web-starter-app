@@ -108,6 +108,7 @@ export async function initSDK(): Promise<void> {
     await RunAnywhere.initialize({
       environment: SDKEnvironment.Development,
       debug: true,
+      // Note: Cache is automatic in IndexedDB (models stored in browser storage)
     });
 
     // Step 2: Register backends (loads WASM automatically)

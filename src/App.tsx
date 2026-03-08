@@ -1,16 +1,10 @@
 import { useState, useEffect } from 'react';
 import { initSDK, getAccelerationMode } from './runanywhere';
-import { ChatTab } from './components/ChatTab';
-import { VisionTab } from './components/VisionTab';
-import { VoiceTab } from './components/VoiceTab';
-import { ToolsTab } from './components/ToolsTab';
-
-type Tab = 'chat' | 'vision' | 'voice' | 'tools';
+import { ScreenShield } from './components/ScreenShield';
 
 export function App() {
   const [sdkReady, setSdkReady] = useState(false);
   const [sdkError, setSdkError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<Tab>('chat');
 
   useEffect(() => {
     initSDK()
@@ -20,19 +14,20 @@ export function App() {
 
   if (sdkError) {
     return (
-      <div className="app-loading">
-        <h2>SDK Error</h2>
-        <p className="error-text">{sdkError}</p>
+      <div className="flex flex-col items-center justify-center h-screen gap-5 text-center px-6 bg-cream">
+        <div className="text-5xl">⚠️</div>
+        <h2 className="text-2xl font-semibold text-charcoal">SDK Error</h2>
+        <p className="text-coral max-w-md">{sdkError}</p>
       </div>
     );
   }
 
   if (!sdkReady) {
     return (
-      <div className="app-loading">
+      <div className="flex flex-col items-center justify-center h-screen gap-6 text-center px-6 bg-cream">
         <div className="spinner" />
-        <h2>Loading RunAnywhere SDK...</h2>
-        <p>Initializing on-device AI engine</p>
+        <h2 className="text-2xl font-semibold text-charcoal">Loading ScreenShield...</h2>
+        <p className="text-charcoal/60">Initializing on-device AI engine</p>
       </div>
     );
   }
@@ -40,33 +35,27 @@ export function App() {
   const accel = getAccelerationMode();
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>RunAnywhere AI</h1>
-        {accel && <span className="badge">{accel === 'webgpu' ? 'WebGPU' : 'CPU'}</span>}
+    <div className="flex flex-col h-screen bg-cream">
+      {/* Header */}
+      <header className="bg-white/50 backdrop-blur-sm border-b border-charcoal/10 sticky top-0 z-10">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🛡️</span>
+            <div>
+              <h1 className="text-xl font-bold text-charcoal">ScreenShield</h1>
+              <p className="text-xs text-charcoal/50">Privacy-First Screenshot Sanitizer</p>
+            </div>
+          </div>
+          {accel && (
+            <span className="px-3 py-1 text-xs font-semibold uppercase bg-coral/10 text-coral rounded-full border border-coral/20">
+              {accel === 'webgpu' ? '⚡ WebGPU' : '🖥️ CPU'}
+            </span>
+          )}
+        </div>
       </header>
 
-      <nav className="tab-bar">
-        <button className={activeTab === 'chat' ? 'active' : ''} onClick={() => setActiveTab('chat')}>
-          💬 Chat
-        </button>
-        <button className={activeTab === 'vision' ? 'active' : ''} onClick={() => setActiveTab('vision')}>
-          📷 Vision
-        </button>
-        <button className={activeTab === 'voice' ? 'active' : ''} onClick={() => setActiveTab('voice')}>
-          🎙️ Voice
-        </button>
-        <button className={activeTab === 'tools' ? 'active' : ''} onClick={() => setActiveTab('tools')}>
-          🔧 Tools
-        </button>
-      </nav>
-
-      <main className="tab-content">
-        {activeTab === 'chat' && <ChatTab />}
-        {activeTab === 'vision' && <VisionTab />}
-        {activeTab === 'voice' && <VoiceTab />}
-        {activeTab === 'tools' && <ToolsTab />}
-      </main>
+      {/* Main Content */}
+      <ScreenShield />
     </div>
   );
 }

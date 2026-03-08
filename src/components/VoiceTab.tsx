@@ -162,7 +162,7 @@ export function VoiceTab() {
   ].filter((l) => l.loader.state !== 'ready');
 
   return (
-    <div className="tab-panel voice-panel">
+    <div className="flex-1 flex flex-col overflow-hidden h-full">
       {pendingLoaders.length > 0 && voiceState === 'idle' && (
         <ModelBanner
           state={pendingLoaders[0].loader.state}
@@ -173,14 +173,38 @@ export function VoiceTab() {
         />
       )}
 
-      {error && <div className="model-banner"><span className="error-text">{error}</span></div>}
+      {error && (
+        <div className="mx-6 mt-6 p-4 bg-coral/10 border border-coral/20 rounded-xl">
+          <span className="text-coral text-sm font-medium">{error}</span>
+        </div>
+      )}
 
-      <div className="voice-center">
-        <div className="voice-orb" data-state={voiceState} style={{ '--level': audioLevel } as React.CSSProperties}>
-          <div className="voice-orb-inner" />
+      <div className="flex-1 flex flex-col items-center justify-center gap-8 p-6">
+        <div 
+          className={`relative w-36 h-36 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${
+            voiceState === 'listening' 
+              ? 'bg-coral shadow-coral/30' 
+              : voiceState === 'processing' || voiceState === 'speaking'
+              ? 'bg-charcoal shadow-charcoal/30'
+              : 'bg-white border-2 border-charcoal/10'
+          }`}
+          style={{ 
+            transform: voiceState === 'listening' ? `scale(${1 + audioLevel * 0.2})` : 'scale(1)',
+            transition: 'transform 0.1s ease-out, background-color 0.3s ease, box-shadow 0.3s ease'
+          }}
+        >
+          <div className={`w-28 h-28 rounded-full flex items-center justify-center ${
+            voiceState === 'listening' || voiceState === 'processing' || voiceState === 'speaking'
+              ? 'bg-cream'
+              : 'bg-charcoal/5'
+          }`}>
+            <span className="text-5xl">
+              {voiceState === 'listening' ? '🎤' : voiceState === 'processing' ? '⚙️' : voiceState === 'speaking' ? '🔊' : '🎙️'}
+            </span>
+          </div>
         </div>
 
-        <p className="voice-status">
+        <p className="text-charcoal/70 text-center font-medium text-lg">
           {voiceState === 'idle' && 'Tap to start listening'}
           {voiceState === 'loading-models' && 'Loading models...'}
           {voiceState === 'listening' && 'Listening... speak now'}
@@ -190,30 +214,33 @@ export function VoiceTab() {
 
         {voiceState === 'idle' || voiceState === 'loading-models' ? (
           <button
-            className="btn btn-primary btn-lg"
+            className="px-8 py-4 rounded-xl bg-coral hover:bg-coral-dark text-white font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
             onClick={startListening}
             disabled={voiceState === 'loading-models'}
           >
             Start Listening
           </button>
         ) : voiceState === 'listening' ? (
-          <button className="btn btn-lg" onClick={stopListening}>
+          <button 
+            className="px-8 py-4 rounded-xl bg-white hover:bg-charcoal/5 text-charcoal font-medium border-2 border-charcoal/20 transition-all"
+            onClick={stopListening}
+          >
             Stop
           </button>
         ) : null}
       </div>
 
       {transcript && (
-        <div className="voice-transcript">
-          <h4>You said:</h4>
-          <p>{transcript}</p>
+        <div className="mx-6 mb-4 p-5 bg-white border border-charcoal/10 rounded-xl shadow-sm">
+          <h4 className="text-xs font-semibold mb-2 text-charcoal/60 uppercase tracking-wide">You said:</h4>
+          <p className="text-sm text-charcoal leading-relaxed">{transcript}</p>
         </div>
       )}
 
       {response && (
-        <div className="voice-response">
-          <h4>AI response:</h4>
-          <p>{response}</p>
+        <div className="mx-6 mb-6 p-5 bg-coral/5 border border-coral/20 rounded-xl">
+          <h4 className="text-xs font-semibold mb-2 text-coral uppercase tracking-wide">AI response:</h4>
+          <p className="text-sm text-charcoal leading-relaxed">{response}</p>
         </div>
       )}
     </div>
